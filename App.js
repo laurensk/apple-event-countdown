@@ -1,6 +1,7 @@
 var request = require('request');
 
 var countDownDate = new Date("Oct 13, 2020 19:00:00").getTime();
+var sentFinalTweet = false;
 
 setInterval(function () {
 
@@ -13,7 +14,8 @@ setInterval(function () {
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    if (distance <= 0) {
+    if (distance <= 0 && !sentFinalTweet) {
+        sentFinalTweet = true;
         return sendFinalTweet();
     }
 
