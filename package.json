@@ -1,5 +1,5 @@
 {
-  "name": "eventweet",
+  "name": "apple-event-countdown",
   "version": "1.0.0",
   "description": "",
   "main": "App.js",
@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "oauth": "^0.9.15",
     "request": "^2.88.2"
   }

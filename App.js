@@ -1,4 +1,7 @@
 var request = require('request');
+var dotenv = require('dotenv');
+
+dotenv.config();
 
 var countDownDate = new Date("Oct 13, 2020 19:00:00").getTime();
 
@@ -23,5 +26,5 @@ setInterval(function () {
 
 function sendTweet(hours, minutes) {
     var params = { value1: `The #AppleEvent starts in ${hours}h ${minutes}min...` };
-    request.post({ url: 'https://maker.ifttt.com/trigger/send_tweet/with/key/cCbmHgWEBiorkIUon8kjru', qs: params });
+    request.post({ url: process.env.IFTTT_WEBHOOK, qs: params });
 }
