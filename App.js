@@ -13,15 +13,31 @@ setInterval(function () {
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
+    if (distance <= 0) {
+        return sendFinalTweet();
+    }
+
+    if (distance > 0 && hours == 0 && minutes <= 15 && seconds == 0) {
+        console.log(days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s ");
+
+        return sendTweet(hours, minutes);
+    }
+
     if (distance > 0 && minutes % 10 == 0 && seconds == 0) {
         console.log(days + "d " + hours + "h "
             + minutes + "m " + seconds + "s ");
 
-        sendTweet(hours, minutes);
+        return sendTweet(hours, minutes);
     }
 }, 1000);
 
 function sendTweet(hours, minutes) {
     var body = { tweet: `The #AppleEvent starts in ${hours}h ${minutes}min...` };
+    request.post(process.env.ZAPIER_WEBHOOK, { body: JSON.stringify(body) });
+}
+
+function sendFinalTweet() {
+    var body = { tweet: `The #AppleEvent starts now!!! Enjoy the event.` };
     request.post(process.env.ZAPIER_WEBHOOK, { body: JSON.stringify(body) });
 }
