@@ -1,45 +1,91 @@
-var request = require('request');
+var schedule = require('node-schedule');
+var Twitter = require('twitter');
 
-var countDownDate = new Date("Oct 13, 2020 19:00:00").getTime();
-var sentFinalTweet = false;
+const appleEventStartDate = new Date("Nov 10, 2020 19:00:00").getTime();
 
-setInterval(function () {
+let sentFinalTweet = false;
 
-    var now = new Date().getTime();
+(function main() {
+    setupTwitter((client) => {
+        registerScheduleHandler(client);
+    })
+})();
 
-    var distance = countDownDate - now;
-
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    if (distance <= 0 && !sentFinalTweet) {
-        sentFinalTweet = true;
-        return sendFinalTweet();
-    }
-
-    if (distance > 0 && hours == 0 && minutes <= 15 && seconds == 0) {
-        console.log(days + "d " + hours + "h "
-            + minutes + "m " + seconds + "s ");
-
-        return sendTweet(hours, minutes);
-    }
-
-    if (distance > 0 && minutes % 10 == 0 && seconds == 0) {
-        console.log(days + "d " + hours + "h "
-            + minutes + "m " + seconds + "s ");
-
-        return sendTweet(hours, minutes);
-    }
-}, 1000);
-
-function sendTweet(hours, minutes) {
-    var body = { tweet: `The #AppleEvent starts in ${hours}h ${minutes}min...` };
-    request.post(process.env.ZAPIER_WEBHOOK, { body: JSON.stringify(body) });
+function setupTwitter(callback) {
+    var client = new Twitter({
+        consumer_key: 'StrnikdEbmvLdVPVrL20wWZMu',
+        consumer_secret: 'DnrohQW7Fi1TbzkkldpN87gWPLle4tDHA3ql93ytvyWFtoPa26',
+        access_token_key: '887301799304192005-YjkKDhl9ZpdszfxV2K779H9RLJwBSEa',
+        access_token_secret: '6ZnMF4OpjepbkPfEN5Fyo0lutBwoNcfnEfAuSK69HVM6h'
+    });
+    callback(client);
 }
 
-function sendFinalTweet() {
-    var body = { tweet: `The #AppleEvent starts now!!! Enjoy the event.` };
-    request.post(process.env.ZAPIER_WEBHOOK, { body: JSON.stringify(body) });
+function registerScheduleHandler(client) {
+    initStart();
+    schedule.scheduleJob('* * * * *', function () {
+        const currentDate = new Date().getTime();
+        processTweetAction(currentDate, client);
+    });
+    initDone();
+}
+
+function processTweetAction(currentDate, client) {
+    const distance = appleEventStartDate - currentDate;
+
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (currentDate > appleEventStartDate && !sentFinalTweet) {
+        sentFinalTweet = true;
+        return startsNow(hours, minutes, client);
+    } else if (distance > 0 && hours == 0 && minutes <= 15) {
+        return last15minutesBefore(hours, minutes, client);
+    } else if (distance > 0 && hours == 0 && minutes <= 60) {
+        return lastHourBefore(hours, minutes, client);
+    } else if (distance > 0 && hours <= 9 && minutes == 0) {
+        return lastHoursBefore(hours, minutes, client);
+    } else if (distance > 0 && hours >= 1 && minutes == 0) {
+        return hoursBefore(hours, minutes, client);
+    }
+}
+
+function hoursBefore(hours, minutes, client) {
+    const tweet = `The #AppleEvent starts in ${hours}h ${minutes}min...`;
+    sendTweet(client, tweet);
+}
+
+function lastHoursBefore(hours, minutes, client) {
+    const tweet = `The #AppleEvent starts in ${hours}h ${minutes}min...`;
+    sendTweet(client, tweet);
+}
+
+function lastHourBefore(hours, minutes, client) {
+    const tweet = `The #AppleEvent starts in ${minutes}min...`;
+    sendTweet(client, tweet);
+}
+
+function last15minutesBefore(hours, minutes, client) {
+    const tweet = `The #AppleEvent starts in ${minutes}min...`;
+    sendTweet(client, tweet);
+}
+
+function startsNow(hours, minutes, client) {
+    const tweet = `The #AppleEvent starts now! Enjoy the event!`;
+    sendTweet(client, tweet);
+}
+
+function sendTweet(client, tweet) {
+    client.post('statuses/update', { status: tweet }, function (error, tweet, response) {
+        if (error) console.log(new Date().getTime() + ': Tweet failed...');
+        if (!error) console.log(new Date().getTime() + ': Tweet sent successfully...');
+    });
+}
+
+function initStart() {
+    console.log('Starting apple-event-countdown...');
+}
+
+function initDone() {
+    console.log('Successfully started apple-event-countdown.');
 }
