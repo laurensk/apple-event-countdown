@@ -77,8 +77,8 @@ function startsNow(hours, minutes, client) {
 
 function sendTweet(client, tweet) {
     client.post('statuses/update', { status: tweet }, function (error, tweet, response) {
-        if (error) console.log(new Date().getTime() + ': Tweet failed...');
-        if (!error) console.log(new Date().getTime() + ': Tweet sent successfully...');
+        if (error) console.log(new Date().getDate() + ': Tweet failed...');
+        if (!error) console.log(new Date().getDate() + ': Tweet sent successfully...');
     });
 }
 
