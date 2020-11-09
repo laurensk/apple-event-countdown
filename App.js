@@ -1,5 +1,6 @@
 var schedule = require('node-schedule');
 var Twitter = require('twitter');
+require('dotenv').config()
 
 const appleEventStartDate = new Date("Nov 10, 2020 19:00:00").getTime();
 
@@ -13,10 +14,10 @@ let sentFinalTweet = false;
 
 function setupTwitter(callback) {
     var client = new Twitter({
-        consumer_key: 'StrnikdEbmvLdVPVrL20wWZMu',
-        consumer_secret: 'DnrohQW7Fi1TbzkkldpN87gWPLle4tDHA3ql93ytvyWFtoPa26',
-        access_token_key: '887301799304192005-YjkKDhl9ZpdszfxV2K779H9RLJwBSEa',
-        access_token_secret: '6ZnMF4OpjepbkPfEN5Fyo0lutBwoNcfnEfAuSK69HVM6h'
+        consumer_key: process.env.CONSUMER_KEY,
+        consumer_secret: process.env.CONSUMER_SECRET,
+        access_token_key: process.env.ACCESS_TOKEN_KEY,
+        access_token_secret: process.env.ACCESS_TOKEN_SECRET
     });
     callback(client);
 }
