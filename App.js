@@ -42,8 +42,6 @@ function processTweetAction(currentDate, client) {
         return startsNow(hours, minutes, client);
     } else if (distance > 0 && hours == 0 && minutes <= 15) {
         return last15minutesBefore(hours, minutes, client);
-    } else if (distance > 0 && hours == 0 && minutes <= 60) {
-        return lastHourBefore(hours, minutes, client);
     } else if (distance > 0 && hours <= 9 && minutes % 10 == 0) {
         return lastHoursBefore(hours, minutes, client);
     } else if (distance > 0 && hours >= 1 && minutes == 0) {
@@ -58,11 +56,6 @@ function hoursBefore(hours, minutes, client) {
 
 function lastHoursBefore(hours, minutes, client) {
     const tweet = `The #AppleEvent starts in ${hours}h ${minutes}min...`;
-    sendTweet(client, tweet);
-}
-
-function lastHourBefore(hours, minutes, client) {
-    const tweet = `The #AppleEvent starts in ${minutes}min...`;
     sendTweet(client, tweet);
 }
 
