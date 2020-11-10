@@ -44,7 +44,7 @@ function processTweetAction(currentDate, client) {
         return last15minutesBefore(hours, minutes, client);
     } else if (distance > 0 && hours == 0 && minutes <= 60) {
         return lastHourBefore(hours, minutes, client);
-    } else if (distance > 0 && hours <= 9 && minutes == 0) {
+    } else if (distance > 0 && hours <= 9 && minutes % 10 == 0) {
         return lastHoursBefore(hours, minutes, client);
     } else if (distance > 0 && hours >= 1 && minutes == 0) {
         return hoursBefore(hours, minutes, client);
